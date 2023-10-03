@@ -6,6 +6,7 @@ const session = require('express-session');
 const app = express();
 app.use(express.json());
 app.use(cookieParser());// we invoke it as a middle
+
 app.use(session ({ secret: 'your-secret-key' , resave: false , saveUninitialized: true}));
 
 const users = [
@@ -23,28 +24,26 @@ const isAuthenticated = (req , res , next) => {
       res.send('You Need To Be Authenticated');
     }
 }
+app.set('view engine','ejs');
 
-app.get('/login', (req, res) => {
-    res.send(`
-      <h1>Login</h1>
-      <form action="/login" method="POST">
-        <input type="text" name="username" placeholder="Username" required><br>
-        <input type="password" name="password" placeholder="Password" required><br>
-        <button type="submit">Login</button>
-      </form>
-    `);
-  });
+app.get('/Register', (req, res) => {
+  res.render('Register');
+});
 
 app.post('/Register' , (req , res ) => {
     const { username , password} = req.body ;
-    const HashedPassword = bcrypt.hashSync(password , 10);
-    users.push({username , HashedPassword});
-    res.send('Register successfully');
+    // const HashedPassword = bcrypt.hashSync(password , 10);
+    users.push({username , password});
+    res.render('registration-success');
 })
 
 app.get('/get' , (req , res) => {
   res.send(users)
 })
+
+app.get('/login', (req, res) => {
+  res.render('login');
+});
 
 app.post('/login' , (req , res) => {
         const { username , password } = req.body ;
